@@ -1,8 +1,7 @@
 import {Entity, belongsTo, model, property} from '@loopback/repository';
-import {Role} from './role.model';
 import {User} from './user.model';
 @model({settings: {strict: true}})
-export class UserRoleMapping extends Entity {
+export class DoAgentMappings extends Entity {
 
   @property({
     type: 'number',
@@ -35,22 +34,22 @@ export class UserRoleMapping extends Entity {
   @belongsTo(
     () => User,
     {
-      name: 'appUser',
-      keyFrom: 'appUserId',
+      name: 'do',
+      keyFrom: 'doId',
       keyTo: 'id'
     }
   )
-  appUserId: number;
+  doId: number;
 
   @belongsTo(
-    () => Role,
+    () => User,
     {
-      name: 'appRole',
-      keyFrom: 'appRoleId',
+      name: 'agent',
+      keyFrom: 'agentId',
       keyTo: 'id'
     }
   )
-  appRoleId: number;
+  agentId: number;
 
   // Define well-known properties here
 
@@ -58,13 +57,13 @@ export class UserRoleMapping extends Entity {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [prop: string]: any;
 
-  constructor(data?: Partial<UserRoleMapping>) {
+  constructor(data?: Partial<DoAgentMappings>) {
     super(data);
   }
 }
 
-export interface UserRoleMappingRelations {
+export interface DoAgentMappingsRelations {
   // describe navigational properties here
 }
 
-export type UserRoleMappingWithRelations = UserRoleMapping & UserRoleMappingRelations;
+export type DoAgentMappingsWithRelations = DoAgentMappings & DoAgentMappingsRelations;

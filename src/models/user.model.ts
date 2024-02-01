@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, hasOne, model, property} from '@loopback/repository';
+import {UserRoleMapping} from './user-role-mapping.model';
 
 @model({settings: {strict: true}})
 export class User extends Entity {
@@ -54,6 +55,23 @@ export class User extends Entity {
     default:  new Date()
   })
   lastModifiedDate: string;
+
+  @property({
+    type: 'boolean',
+    required: false,
+    default: true
+  })
+  isProspect?: boolean;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  comments?: string;
+
+
+  @hasOne(() => UserRoleMapping, {keyTo: 'appUserId'})
+  roleDetails?: UserRoleMapping;
 
 
 
