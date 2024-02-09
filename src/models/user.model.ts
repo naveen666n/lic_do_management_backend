@@ -39,14 +39,20 @@ export class User extends Entity {
     type: 'string',
     required: true,
   })
-  addressLine2: string;
+  addressLine2?: string;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  pinCode?: string;
 
   @property({
     type: 'date',
     required: false,
     default: new Date()
   })
-  createdDate: string;
+  createdDate?: string;
 
 
   @property({
@@ -54,7 +60,7 @@ export class User extends Entity {
     required: false,
     default:  new Date()
   })
-  lastModifiedDate: string;
+  lastModifiedDate?: string;
 
   @property({
     type: 'boolean',

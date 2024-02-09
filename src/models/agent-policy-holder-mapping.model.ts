@@ -2,14 +2,12 @@ import {Entity, belongsTo, model, property} from '@loopback/repository';
 import {User} from './user.model';
 @model({settings: {strict: true}})
 export class AgentPolicyHolderMapping extends Entity {
-
   @property({
     type: 'number',
     id: true,
     generated: true,
   })
   id?: number;
-
 
   @property({
     type: 'string',
@@ -19,38 +17,30 @@ export class AgentPolicyHolderMapping extends Entity {
   @property({
     type: 'date',
     required: false,
-    default: new Date()
+    default: new Date(),
   })
   createdDate: string;
-
 
   @property({
     type: 'date',
     required: false,
-    default:  new Date()
+    default: new Date(),
   })
   lastModifiedDate: string;
 
-  @belongsTo(
-    () => User,
-    {
-      name: 'agent',
-      keyFrom: 'agentId',
-      keyTo: 'id'
-    }
-  )
+  @belongsTo(() => User, {
+    name: 'agent',
+    keyFrom: 'agentId',
+    keyTo: 'id',
+  })
   agentId: number;
 
-  @belongsTo(
-    () => User,
-    {
-      name: 'policyHolder',
-      keyFrom: 'policyHolderId',
-      keyTo: 'id'
-    }
-  )
+  @belongsTo(() => User, {
+    name: 'policyHolder',
+    keyFrom: 'policyHolderId',
+    keyTo: 'id',
+  })
   policyHolderId: number;
-
 
   // Define well-known properties here
 
@@ -67,4 +57,5 @@ export interface AgentPolicyHolderMappingRelations {
   // describe navigational properties here
 }
 
-export type AgentPolicyHolderMappingWithRelations = AgentPolicyHolderMapping & AgentPolicyHolderMappingRelations;
+export type AgentPolicyHolderMappingWithRelations = AgentPolicyHolderMapping &
+  AgentPolicyHolderMappingRelations;

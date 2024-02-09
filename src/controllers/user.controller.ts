@@ -18,16 +18,16 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {UserFacade} from '../facades';
+import {UserFacade, UserObject} from '../facades';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
 
 export class UserController {
   constructor(
     @repository(UserRepository)
-    public userRepository : UserRepository,
+    public userRepository: UserRepository,
     @service(UserFacade)
-    public userFacade : UserFacade
+    public userFacade: UserFacade,
   ) {}
 
   @post('/users')
@@ -56,9 +56,7 @@ export class UserController {
     description: 'User model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(User) where?: Where<User>,
-  ): Promise<Count> {
+  async count(@param.where(User) where?: Where<User>): Promise<Count> {
     return this.userRepository.count(where);
   }
 
@@ -74,9 +72,7 @@ export class UserController {
       },
     },
   })
-  async find(
-    @param.filter(User) filter?: Filter<User>,
-  ): Promise<User[]> {
+  async find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
     return this.userRepository.find(filter);
   }
 
@@ -96,6 +92,7 @@ export class UserController {
     user: User,
     @param.where(User) where?: Where<User>,
   ): Promise<Count> {
+    // Use 'where' if needed or remove it if unnecessary.
     return this.userRepository.updateAll(user, where);
   }
 
@@ -110,7 +107,7 @@ export class UserController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>
+    @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>,
   ): Promise<User> {
     return this.userRepository.findById(id, filter);
   }
@@ -152,25 +149,110 @@ export class UserController {
     await this.userRepository.deleteById(id);
   }
 
+  @post('/createUser')
+  @response(200, {
+    description: 'User model instance',
+    // content: {'application/json': {schema: getModelSchemaRef(User)}},
+  })
+  async createAgent(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              toBeCreatedUserRoleId: {
+                type: 'number',
+              },
+              doUserId: {
+                type: 'number',
+              },
+              agentId: {
+                type: 'number',
+              },
+              userInfo: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string',
+                  },
+                  mobileNumber: {
+                    type: 'string',
+                  },
+                  email: {
+                    type: 'string',
+                  },
+                  addressLine1: {
+                    type: 'string',
+                  },
+                  addressLine2: {
+                    type: 'string',
+                  },
+                  pinCode: {
+                    type: 'string',
+                  },
+                  isProspect: {
+                    type: 'boolean',
+                  },
+                  comments: {
+                    type: 'string',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+    user: UserObject,
+  ): Promise<object> {
+    return this.userFacade.createUser(user);
+  }
 
-  // @post('/createAgent')
+  @get('/users/{id}/convertProspectToConfirmed')
+  @response(200, {
+    description: 'User model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(User, {includeRelations: true}),
+      },
+    },
+  })
+  async convertProspectToConfirmed(
+    @param.path.number('id') id: number,
+  ): Promise<object> {
+    return this.userFacade.convertProspectToConfirmed(id);
+  }
+
+  // @get('/users/{id}/getDataForDo')
   // @response(200, {
   //   description: 'User model instance',
-  //   content: {'application/json': {schema: getModelSchemaRef(User)}},
-  // })
-  // async createAgent(
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(User, {
-  //           title: 'NewUser',
-  //           exclude: ['id'],
-  //         }),
-  //       },
+  //   content: {
+  //     'application/json': {
+  //       schema: getModelSchemaRef(User, {includeRelations: true}),
   //     },
-  //   })
-  //   user: Omit<User, 'id'>,
-  // ): Promise<object> {
-  //   return this.userFacade.createUser({});
+  //   },
+  // })
+  // async getDataForDo(@param.path.number('id') id: number): Promise<User> {
+  //   return this.userFacade.getDataForDo(id);
   // }
+
+  @get('//users/{id}/getDataForDo')
+  @response(200, {
+    description: 'Array of User model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(User, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async(
+    @param.path.number('id') id: number,
+    @param.query.object('contextFilter') contextFilter?: object,
+  ): Promise<User[]> {
+    return this.userFacade.getDataForDo(id, contextFilter);
+  }
 }
